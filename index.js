@@ -19,17 +19,17 @@ app.get("/", function (req, res) {
     res.sendFile(__dirname + "/views/index.html");
 });
 
-app.get("/api/:timestamp", (req, res) => {
-    const isUnix = Number(req.params.timestamp);
-    const date = Number.isNaN(isUnix)
-        ? Date.parse(req.params.timestamp)
-        : isUnix;
-    if (Number.isNaN(date)) {
-        res.json({ error: "Invalid Date" });
-    } else {
-        const parsedDate = new Date(date);
-        res.json({ unix: parsedDate.getTime(), utc: parsedDate.toUTCString() });
+app.get("/api/:timestamp?", (req, res) => {
+    let date;
+    if (req.params.timestamp) {
+        const isUnix = Number(req.params.timestamp);
+        date = Number.isNaN(isUnix) ? Date.parse(req.params.timestamp) : isUnix;
+        if (Number.isNaN(date)) {
+            res.json({ error: "Invalid Date" });
+        }
     }
+    const parsedDate = date ? new Date(date) : new Date();
+    res.json({ unix: parsedDate.getTime(), utc: parsedDate.toUTCString() });
 });
 
 // listen for requests :)
